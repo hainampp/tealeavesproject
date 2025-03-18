@@ -30,48 +30,6 @@ public class WarehouseServiceImp implements WarehouseService {
     @Autowired
     PackageRepository packageRepository;
 
-    public QrResponse extractDataFromQR(String qrCode) {
-        String lengpackid = qrCode.substring(0, 2);
-        int leng = Integer.parseInt(lengpackid);
-        String packageid = qrCode.substring(2, leng + 2);
-        long packageId = Long.parseLong(packageid);
-
-        qrCode = qrCode.substring(leng + 2);
-        String lenguserid = qrCode.substring(0, 2);
-        int leng2 = Integer.parseInt(lenguserid);
-        String userid = qrCode.substring(2, leng2 + 2);
-        long userId = Long.parseLong(userid);
-
-        qrCode = qrCode.substring(leng2 + 2);
-        String lengwarehouseid = qrCode.substring(0, 2);
-        int leng3 = Integer.parseInt(lengwarehouseid);
-        String warehouseid = qrCode.substring(2, leng3 + 2);
-        long warehouseId = Long.parseLong(warehouseid);
-
-        qrCode = qrCode.substring(leng3 + 2);
-        String lengcreatedate = qrCode.substring(0, 2);
-        int leng4 = Integer.parseInt(lengcreatedate);
-        String createdate = qrCode.substring(2, leng4 + 2);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        Date createDate = new Date();
-        try {
-            createDate = formatter.parse(createdate);
-        } catch (ParseException e) {
-            log.warn("Error String to Date " + e.getMessage());
-        }
-        qrCode = qrCode.substring(leng4 + 2);
-        String lengtypecode = qrCode.substring(0, 2);
-        int leng5 = Integer.parseInt(lengtypecode);
-        String teacode = qrCode.substring(2, leng5 + 2);
-
-        return QrResponse.builder().packageid(packageId)
-                .userid(userId)
-                .warehouseid(warehouseId)
-                .createtime(createDate)
-                .teacode(teacode)
-                .build();
-    }
-
     // tính số bao chè sẵn sàng vận chuyển
     public long calculateTotalPackage(Warehouse warehouse) {
         long sum = 0;
@@ -134,24 +92,21 @@ public class WarehouseServiceImp implements WarehouseService {
                 .packages(packageDtoList).build();
         return warehousePackageDto;
     }
-
     @Override
-    public QrResponse scanQrCode(String qrcode) {
-        QrResponse qrResponse = extractDataFromQR(qrcode);
-        long packageid = qrResponse.getPackageid();
+    public String scanQrCode(long packageid) {
         Package p = packageRepository.findByPackageid(packageid);
         if (p == null) {
             throw ApiException.ErrDataLoss().build();
         }
         if (p.getStatus().equals("Weighn't yet")) {
-            p.setStatus("Scanning");
+            p.setStatus("Scanned");
             packageRepository.save(p);
-            qrResponse.setMessage("Scan thành công");
+            return "Scan thành công";
         }
-        if (p.getStatus().equals("Scanning") || p.getStatus().equals("Wait delivery")) {
-            qrResponse.setMessage("Sản phẩm đã được quét");
+        if (p.getStatus().equals("Scanned") || p.getStatus().equals("Wait delivery")) {
+            return "Sản phẩm đã được quét";
         }
-        return qrResponse;
+        return "Quét thất bại";
     }
 
     @Override
@@ -168,7 +123,7 @@ public class WarehouseServiceImp implements WarehouseService {
         if (warehouse == null) {
             throw ApiException.ErrDataLoss().build();
         }
-        List<Package> p = packageRepository.findByStatusAndWarehouse("Scanning", warehouse);
+        List<Package> p = packageRepository.findByStatusAndWarehouse("Scanned", warehouse);
         if (p.size() == 0) {
             responseData.setMessage("Không tìm thấy bao scan gần nhất");
             System.out.println("Không tìm thấy bao scan gần nhất");

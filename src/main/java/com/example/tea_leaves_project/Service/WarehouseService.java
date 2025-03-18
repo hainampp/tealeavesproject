@@ -11,5 +11,5 @@ import java.util.List;
 public interface WarehouseService {
     List<WarehouseDto> getAllWarehouse();
     WarehousePackageDto getPackageByWarehouse(long warehouseid);
-    QrResponse scanQrCode(String qrcode);
+    String scanQrCode(long packageid);
     ResponseData Weigh(WeighRequest weighRequest);}

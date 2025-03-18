@@ -4,8 +4,10 @@ import com.example.tea_leaves_project.DTO.WarehouseDto;
 import com.example.tea_leaves_project.Exception.ApiException;
 import com.example.tea_leaves_project.Model.entity.Warehouse;
 import com.example.tea_leaves_project.Payload.Request.WeighRequest;
+import com.example.tea_leaves_project.Payload.Response.QrResponse;
 import com.example.tea_leaves_project.Service.UserService;
 import com.example.tea_leaves_project.Service.WarehouseService;
+import com.example.tea_leaves_project.Service.helper.QRServiceHelper;
 import com.example.tea_leaves_project.Util.JwtUtilHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,8 @@ public class WareHouseController {
     UserService userService;
     @Autowired
     WarehouseService warehouseService;
+    @Autowired
+    QRServiceHelper qrServiceHelper;
     private String getTokenFromHeader(WebRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
@@ -37,12 +41,12 @@ public class WareHouseController {
     @GetMapping("/allwarehouse")
     public ResponseEntity<?> getAllWarehouse(WebRequest request){
         String token=getTokenFromHeader(request);
-//        if(token==null){
-//            throw ApiException.ErrForbidden().build();
-//        }
-//        if(!jwtUtil.verifyToken(token)){
-//            throw ApiException.ErrForbidden().build();
-//        }
+        if(token==null){
+            throw ApiException.ErrForbidden().build();
+        }
+        if(!jwtUtil.verifyToken(token)){
+            throw ApiException.ErrForbidden().build();
+        }
         return new ResponseEntity<>(warehouseService.getAllWarehouse(), HttpStatus.OK);
     }
     @GetMapping("/allpackage/{warehouseid}")
@@ -62,7 +66,8 @@ public class WareHouseController {
     }
     @PutMapping("/scan")
     public  ResponseEntity<?> scanPackage(@RequestParam String qrcode) {
-        return new ResponseEntity<>(warehouseService.scanQrCode(qrcode), HttpStatus.OK);
+        QrResponse qrResponse =new QrResponse();
+        return new ResponseEntity<>(qrServiceHelper.unpack(qrcode,qrResponse), HttpStatus.OK);
     }
 
 }

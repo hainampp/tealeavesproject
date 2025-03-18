@@ -13,10 +13,12 @@ import com.example.tea_leaves_project.Responsitory.PackageRepository;
 import com.example.tea_leaves_project.Responsitory.TypeTeaRespository;
 import com.example.tea_leaves_project.Responsitory.UserRepository;
 import com.example.tea_leaves_project.Responsitory.WarehouseRepository;
+import com.example.tea_leaves_project.Service.imp.WarehouseServiceImp;
 import com.example.tea_leaves_project.constant.QRTag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -32,6 +34,8 @@ public class QRServiceHelper {
     private final WarehouseRepository warehouseRepository;
     private final TypeTeaRespository teaRepository;
     private final PackageRepository packageRepository;
+    @Autowired
+    WarehouseServiceImp warehouseServiceImp;
 
     public String pack(String email, PackageRequest request){
         log.info("Generating QR Code with request: {}, email: {}", request, email);
@@ -106,6 +110,8 @@ public class QRServiceHelper {
             switch (tag){
                 case QRTag.PACKAGE_ID:
                     qrResponse.setPackageid(Long.parseLong(body));
+                    String mess= warehouseServiceImp.scanQrCode(Long.parseLong(body));
+                    qrResponse.setMessage(mess);
                     break;
                 case QRTag.USER_ID:
                     qrResponse.setUserid(Long.parseLong(body));

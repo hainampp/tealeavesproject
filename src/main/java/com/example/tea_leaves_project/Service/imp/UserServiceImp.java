@@ -85,50 +85,6 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public String createPackage(String email, PackageRequest packageRequest) {
-        Users user = userRepository.findUserByEmail(email);
-        if (user == null) {
-            throw ApiException.ErrBadCredentials().build();
-        }
-        Warehouse warehouse = warehouseRepository.findByWarehouseid(packageRequest.getWarehouseid());
-        TypeTea typeTea = teaRespository.findByTypeteaid(packageRequest.getTypeteaid());
-        Package p = new Package();
-        p.setUser(user);
-        p.setWarehouse(warehouse);
-        p.setCreatedtime(packageRequest.getCreatedtime());
-        p.setTypetea(typeTea);
-        p.setUtil("Kg");
-        p.setStatus("Weighn't yet");
-        Package pack = packageRepository.save(p);
-        // Gen QR code
-
-        StringBuilder qrcode = new StringBuilder();
-
-        qrcode.append(calculateChar(String.valueOf(p.getPackageid())));
-        qrcode.append(p.getPackageid());
-
-        qrcode.append(calculateChar(String.valueOf(user.getUserid())));
-        qrcode.append(user.getUserid());
-
-        qrcode.append(calculateChar(String.valueOf(warehouse.getWarehouseid())));
-        qrcode.append(warehouse.getWarehouseid());
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        String formattedDateTime = formatter.format(packageRequest.getCreatedtime());
-        qrcode.append(calculateChar(formattedDateTime));
-        qrcode.append(formattedDateTime);
-
-        qrcode.append(calculateChar(typeTea.getTeacode()));
-        qrcode.append(typeTea.getTeacode());
-
-        String qrcodeString = qrcode.toString();
-
-        p.setQrcode(qrcodeString);
-        packageRepository.save(p);
-        return qrcodeString;
-    }
-
-    @Override
     public ResponseData deletePackage(String email, long packageId) {
         ResponseData responseData = new ResponseData();
         ResponseData.resp();
@@ -136,12 +92,18 @@ public class UserServiceImp implements UserService {
         if (user == null) {
             throw ApiException.ErrBadCredentials().build();
         }
-        try {
-            packageRepository.deleteById(packageId);
-            responseData.setMessage("Xóa thành công");
-        } catch (Exception e) {
-            responseData.setMessage(e.getMessage());
-            log.error("Lỗi xóa package " + e.getMessage());
+        Package pack=packageRepository.findByPackageid(packageId);
+        if( !pack.getStatus().equals("Wait delivery") ) {
+            try {
+                packageRepository.deleteById(packageId);
+                responseData.setMessage("Xóa thành công");
+            } catch (Exception e) {
+                responseData.setMessage(e.getMessage());
+                log.error("Lỗi xóa package " + e.getMessage());
+            }
+        }
+        else{
+            responseData.setMessage("Không thể xóa gói này");
         }
         return responseData;
     }

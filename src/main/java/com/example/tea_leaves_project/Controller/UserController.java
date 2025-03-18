@@ -3,6 +3,7 @@ package com.example.tea_leaves_project.Controller;
 import com.example.tea_leaves_project.Exception.ApiException;
 import com.example.tea_leaves_project.Payload.Request.PackageRequest;
 import com.example.tea_leaves_project.Service.UserService;
+import com.example.tea_leaves_project.Service.helper.QRServiceHelper;
 import com.example.tea_leaves_project.Util.JwtUtilHelper;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;
@@ -24,6 +25,8 @@ public class UserController {
     JwtUtilHelper jwtUtil;
     @Autowired
     UserService userService;
+    @Autowired
+    QRServiceHelper qrServiceHelper;
 
     private String getTokenFromHeader(WebRequest request) {
         String header = request.getHeader("Authorization");
@@ -56,7 +59,7 @@ public class UserController {
             throw ApiException.ErrForbidden().build();
         }
         String email= jwtUtil.getEmail(token);
-        return new ResponseEntity<>(userService.createPackage(email, packageRequest), HttpStatus.OK);
+        return new ResponseEntity<>(qrServiceHelper.pack(email, packageRequest), HttpStatus.OK);
     }
     @GetMapping("/allpackage")
     public ResponseEntity<?> getAllPackage(WebRequest request){
@@ -70,17 +73,16 @@ public class UserController {
         String email= jwtUtil.getEmail(token);
         return new ResponseEntity<>(userService.getAllPackage(email), HttpStatus.OK);
     }
-//    @DeleteMapping("/package")
-//    public ResponseEntity<?> deletePackage(WebRequest request, @RequestParam  long packageId){
-//        String token=getTokenFromHeader(request);
-//        if(token==null){
-//            throw ApiException.ErrForbidden().build();
-//        }
-//        if(!jwtUtil.verifyToken(token)){
-//            throw ApiException.ErrForbidden().build();
-//        }
-//        String email= jwtUtil.getEmail(token);
-//
-//
-//    }
+    @DeleteMapping("/package/{packageid}")
+    public ResponseEntity<?> deletePackage(WebRequest request, @PathVariable long packageid){
+        String token=getTokenFromHeader(request);
+        if(token==null){
+            throw ApiException.ErrForbidden().build();
+        }
+        if(!jwtUtil.verifyToken(token)){
+            throw ApiException.ErrForbidden().build();
+        }
+        String email= jwtUtil.getEmail(token);
+        return new ResponseEntity<>(userService.deletePackage(email, packageid), HttpStatus.OK);
+    }
 }
