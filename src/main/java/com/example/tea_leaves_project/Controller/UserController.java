@@ -70,4 +70,17 @@ public class UserController {
         String email= jwtUtil.getEmail(token);
         return new ResponseEntity<>(userService.getAllPackage(email), HttpStatus.OK);
     }
+//    @DeleteMapping("/package")
+//    public ResponseEntity<?> deletePackage(WebRequest request, @RequestParam  long packageId){
+//        String token=getTokenFromHeader(request);
+//        if(token==null){
+//            throw ApiException.ErrForbidden().build();
+//        }
+//        if(!jwtUtil.verifyToken(token)){
+//            throw ApiException.ErrForbidden().build();
+//        }
+//        String email= jwtUtil.getEmail(token);
+//
+//
+//    }
 }
