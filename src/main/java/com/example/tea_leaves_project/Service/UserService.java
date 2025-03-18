@@ -10,6 +10,6 @@ import java.util.List;
 public interface UserService {
     UserInfoDto getCurrentUserIfo(String email);
     List<PackageDto> getAllPackage(String email);
-    String createPackage(String username, PackageRequest packageRequest);
+    String createPackage(String email, PackageRequest packageRequest);
     ResponseData deletePackage(String email, long packageId);
 }

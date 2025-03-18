@@ -3,9 +3,10 @@ package com.example.tea_leaves_project.Service.imp;
 import com.example.tea_leaves_project.DTO.PackageDto;
 import com.example.tea_leaves_project.DTO.UserInfoDto;
 import com.example.tea_leaves_project.Exception.ApiException;
-import com.example.tea_leaves_project.Model.entity.*;
 import com.example.tea_leaves_project.Model.entity.Package;
+import com.example.tea_leaves_project.Model.entity.TypeTea;
 import com.example.tea_leaves_project.Model.entity.Users;
+import com.example.tea_leaves_project.Model.entity.Warehouse;
 import com.example.tea_leaves_project.Payload.Request.PackageRequest;
 import com.example.tea_leaves_project.Payload.ResponseData;
 import com.example.tea_leaves_project.Responsitory.PackageRepository;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 @Slf4j
 @Service
 public class UserServiceImp implements UserService {
@@ -31,15 +33,17 @@ public class UserServiceImp implements UserService {
     WarehouseRepository warehouseRepository;
     @Autowired
     TypeTeaRespository teaRespository;
-    public String calculateChar(String a){
-        int x=a.length();
-        if(x<10)return "0"+String.valueOf(x);
-        else return ""+String.valueOf(x);
+
+    public String calculateChar(String a) {
+        int x = a.length();
+        if (x < 10) return "0" + x;
+        else return String.valueOf(x);
     }
+
     @Override
     public UserInfoDto getCurrentUserIfo(String email) {
-        Users user=userRepository.findUserByEmail(email);
-        if(user==null){
+        Users user = userRepository.findUserByEmail(email);
+        if (user == null) {
             throw ApiException.ErrBadCredentials().build();
         }
         UserInfoDto userInfoDto = UserInfoDto.builder()
@@ -52,16 +56,16 @@ public class UserServiceImp implements UserService {
 
     @Override
     public List<PackageDto> getAllPackage(String email) {
-        Users user=userRepository.findUserByEmail(email);
-        if(user==null){
+        Users user = userRepository.findUserByEmail(email);
+        if (user == null) {
             throw ApiException.ErrBadCredentials().build();
         }
-        List<Package> packageList=packageRepository.findByUser(user);
-        List<PackageDto> packageDtoList= new ArrayList<>();
+        List<Package> packageList = packageRepository.findByUser(user);
+        List<PackageDto> packageDtoList = new ArrayList<>();
 
-        for(Package p : packageList){
+        for (Package p : packageList) {
 
-            PackageDto packageDto=PackageDto.builder()
+            PackageDto packageDto = PackageDto.builder()
                     .packageId(p.getPackageid())
                     .fullname(user.getFullname())
                     .warehouse(p.getWarehouse().getName())
@@ -81,27 +85,27 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public String createPackage(String username, PackageRequest packageRequest) {
-        Users user=userRepository.findUserByEmail(username);
-        if(user==null){
+    public String createPackage(String email, PackageRequest packageRequest) {
+        Users user = userRepository.findUserByEmail(email);
+        if (user == null) {
             throw ApiException.ErrBadCredentials().build();
         }
-        Warehouse warehouse=warehouseRepository.findByWarehouseid(packageRequest.getWarehouseid());
-        TypeTea typeTea=teaRespository.findByTypeteaid(packageRequest.getTypeteaid());
-        Package p= new Package();
+        Warehouse warehouse = warehouseRepository.findByWarehouseid(packageRequest.getWarehouseid());
+        TypeTea typeTea = teaRespository.findByTypeteaid(packageRequest.getTypeteaid());
+        Package p = new Package();
         p.setUser(user);
         p.setWarehouse(warehouse);
         p.setCreatedtime(packageRequest.getCreatedtime());
         p.setTypetea(typeTea);
         p.setUtil("Kg");
         p.setStatus("Weighn't yet");
-        Package pack=packageRepository.save(p);
+        Package pack = packageRepository.save(p);
         // Gen QR code
 
-        StringBuilder qrcode=new StringBuilder();
+        StringBuilder qrcode = new StringBuilder();
 
         qrcode.append(calculateChar(String.valueOf(p.getPackageid())));
-        qrcode.append(String.valueOf(p.getPackageid()));
+        qrcode.append(p.getPackageid());
 
         qrcode.append(calculateChar(String.valueOf(user.getUserid())));
         qrcode.append(user.getUserid());
@@ -117,7 +121,7 @@ public class UserServiceImp implements UserService {
         qrcode.append(calculateChar(typeTea.getTeacode()));
         qrcode.append(typeTea.getTeacode());
 
-        String qrcodeString=qrcode.toString();
+        String qrcodeString = qrcode.toString();
 
         p.setQrcode(qrcodeString);
         packageRepository.save(p);
@@ -126,16 +130,16 @@ public class UserServiceImp implements UserService {
 
     @Override
     public ResponseData deletePackage(String email, long packageId) {
-        ResponseData responseData=new ResponseData();
-        responseData.resp();
-        Users user=userRepository.findUserByEmail(email);
-        if(user==null){
+        ResponseData responseData = new ResponseData();
+        ResponseData.resp();
+        Users user = userRepository.findUserByEmail(email);
+        if (user == null) {
             throw ApiException.ErrBadCredentials().build();
         }
-        try{
+        try {
             packageRepository.deleteById(packageId);
             responseData.setMessage("Xóa thành công");
-        }catch (Exception e){
+        } catch (Exception e) {
             responseData.setMessage(e.getMessage());
             log.error("Lỗi xóa package " + e.getMessage());
         }

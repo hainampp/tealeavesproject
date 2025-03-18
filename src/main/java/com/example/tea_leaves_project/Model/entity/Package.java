@@ -1,14 +1,19 @@
 package com.example.tea_leaves_project.Model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
 
 @Getter
 @Setter
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name="package")
 public class Package {
     @Id
