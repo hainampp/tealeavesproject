@@ -37,9 +37,10 @@ public class CustomFilterSecurtity {
                 .csrf(csrf -> csrf.disable()) // tắt csrf
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login/**"
+                        .requestMatchers("/login/**",
+                                "/warehouse/**"
                                 ).permitAll()
-                        .requestMatchers("/warehouse/**").hasRole("ADMIN")
+//                        .requestMatchers("/warehouse/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
         http.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -52,7 +53,7 @@ public class CustomFilterSecurtity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:5500"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:5500","http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

@@ -1,5 +1,6 @@
 package com.example.tea_leaves_project.Controller;
 
+import com.example.tea_leaves_project.Payload.Request.SigninRequest;
 import com.example.tea_leaves_project.Payload.Request.SignupRequest;
 import com.example.tea_leaves_project.Payload.ResponseData;
 import com.example.tea_leaves_project.Service.LoginService;
@@ -25,8 +26,10 @@ public class LoginController {
         return ResponseEntity.ok(responseData);
     }
     @GetMapping("/signin")
-    public ResponseEntity<ResponseData> authUser(@RequestParam String email,@RequestParam String password){
+    public ResponseEntity<ResponseData> authUser(@RequestParam String email, @RequestParam String password) {
         ResponseData responseData = ResponseData.resp();
+//        String email=signinRequest.getEmail();
+//        String password=signinRequest.getPassword();
         String token=loginService.authUser(email,password);
         responseData.setData(token);
         return ResponseEntity.ok(responseData);

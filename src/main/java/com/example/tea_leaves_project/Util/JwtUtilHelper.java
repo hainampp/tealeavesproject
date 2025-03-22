@@ -29,7 +29,7 @@ public class JwtUtilHelper {
         boolean isVerifiy = false;
         try{
             SecretKey key= Keys.hmacShaKeyFor(Decoders.BASE64.decode(privateKey));
-            Jwts.parser()
+            Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
@@ -43,7 +43,7 @@ public class JwtUtilHelper {
     public String getEmail(String token) {
         SecretKey key= Keys.hmacShaKeyFor(Decoders.BASE64.decode(privateKey));
         @SuppressWarnings("deprecation")
-        String email = Jwts.parser()
+        String email = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token).getBody().getSubject();
@@ -52,7 +52,7 @@ public class JwtUtilHelper {
     public List<String> extractRoles(String token) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(privateKey));
         @SuppressWarnings("deprecation")
-        Claims claims = Jwts.parser() // Dùng parserBuilder()
+        Claims claims = Jwts.parserBuilder() // Dùng parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)

@@ -17,6 +17,7 @@ public enum CodeResponse {
     FILE_IO_EXCEPTION(HttpURLConnection.HTTP_BAD_REQUEST, "FileException", "Có lỗi xảy ra khi xử lý file"),
     DATA_LOSS(HttpURLConnection.HTTP_INTERNAL_ERROR, "DataLoss", "Có lỗi xảy ra với dữ liệu"),
     EXISTED(HttpURLConnection.HTTP_BAD_REQUEST, "Existed", "Đã tồn tại"),
+    INVALID_LENGTH(HttpURLConnection.HTTP_BAD_REQUEST, "InvalidLength", "Length field can not be greater than 99"),
     BAD_CREDENTIALS(HttpURLConnection.HTTP_BAD_REQUEST, "BadCredentials", "Sai thông tin đăng nhập");
 
     public int code;

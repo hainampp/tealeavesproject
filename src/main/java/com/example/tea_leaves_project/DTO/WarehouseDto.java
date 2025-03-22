@@ -13,6 +13,7 @@ public class WarehouseDto {
     private String address;
     private double lat;
     private double lon;
-    private long currentcapacity;
-    private  long totalcapacity;
+    private long totalpackage;
+    private double currentcapacity;
+    private  double totalcapacity;
 }

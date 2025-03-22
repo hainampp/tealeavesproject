@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
     Warehouse findByWarehouseid(long id);
+    Warehouse findByBincode(String bincode);
 }

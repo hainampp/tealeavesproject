@@ -1,15 +1,14 @@
 package com.example.tea_leaves_project.Payload.Request;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
-@Getter
-@Setter
-
+@Data
 public class PackageRequest {
     private long warehouseid;
-    private Date createdtime;
     private long typeteaid;
 }
