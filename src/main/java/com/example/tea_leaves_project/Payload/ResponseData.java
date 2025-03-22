@@ -1,6 +1,6 @@
 package com.example.tea_leaves_project.Payload;
 
-import com.example.tea_leaves_project.Exception.CodeResponse;
+import com.example.tea_leaves_project.exception.CodeResponse;
 import lombok.*;
 
 @Getter
