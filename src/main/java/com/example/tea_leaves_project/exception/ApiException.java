@@ -1,4 +1,4 @@
-package com.example.tea_leaves_project.exception;
+package com.example.tea_leaves_project.Exception;
 
 
 import lombok.Builder;

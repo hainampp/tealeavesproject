@@ -1,9 +1,10 @@
-package com.example.tea_leaves_project.dto;
+package com.example.tea_leaves_project.DTO;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Date;
 @Getter
 @Setter
@@ -12,8 +13,8 @@ public class PackageDto {
     private long packageId;
     private String fullname;
     private String warehouse;
-    private Date createdtime;
-    private Date weightime;
+    private Timestamp createdtime;
+    private Timestamp weightime;
     private String typeteaname;
     private double capacity;
     private String unit;

@@ -1,10 +1,10 @@
-package com.example.tea_leaves_project.service.imp;
+package com.example.tea_leaves_project.Service.imp;
 
-import com.example.tea_leaves_project.dto.TypeTeaDto;
-import com.example.tea_leaves_project.exception.ApiException;
-import com.example.tea_leaves_project.entity.TypeTea;
-import com.example.tea_leaves_project.repository.TypeTeaRespository;
-import com.example.tea_leaves_project.service.TypeteaService;
+import com.example.tea_leaves_project.DTO.TypeTeaDto;
+import com.example.tea_leaves_project.Exception.ApiException;
+import com.example.tea_leaves_project.Model.entity.TypeTea;
+import com.example.tea_leaves_project.Responsitory.TypeTeaRespository;
+import com.example.tea_leaves_project.Service.TypeteaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.example.tea_leaves_project.entity;
+package com.example.tea_leaves_project.Model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -29,12 +30,12 @@ public class Package {
     private Warehouse warehouse;
 
     @Column(name="created_time")
-    @Temporal(TemporalType.DATE)
-    private Date createdtime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp createdtime;
 
     @Column(name="weigh_time")
-    @Temporal(TemporalType.DATE)
-    private Date weightime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Timestamp weightime;
 
     @ManyToOne
     @JoinColumn(name="typeteaid")

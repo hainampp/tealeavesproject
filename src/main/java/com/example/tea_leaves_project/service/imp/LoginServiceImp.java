@@ -1,13 +1,14 @@
-package com.example.tea_leaves_project.service.imp;
+package com.example.tea_leaves_project.Service.imp;
 
-import com.example.tea_leaves_project.exception.ApiException;
-import com.example.tea_leaves_project.entity.Roles;
-import com.example.tea_leaves_project.entity.Users;
+import com.example.tea_leaves_project.Exception.ApiException;
+import com.example.tea_leaves_project.Model.entity.Roles;
+import com.example.tea_leaves_project.Model.entity.Users;
+import com.example.tea_leaves_project.Model.entity.Users;
 import com.example.tea_leaves_project.Payload.Request.SignupRequest;
-import com.example.tea_leaves_project.repository.RolesRepository;
-import com.example.tea_leaves_project.repository.UserRepository;
-import com.example.tea_leaves_project.service.LoginService;
-import com.example.tea_leaves_project.util.JwtUtilHelper;
+import com.example.tea_leaves_project.Responsitory.RolesRepository;
+import com.example.tea_leaves_project.Responsitory.UserRepository;
+import com.example.tea_leaves_project.Service.LoginService;
+import com.example.tea_leaves_project.Util.JwtUtilHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

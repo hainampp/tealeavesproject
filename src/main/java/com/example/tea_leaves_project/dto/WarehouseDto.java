@@ -1,4 +1,4 @@
-package com.example.tea_leaves_project.dto;
+package com.example.tea_leaves_project.DTO;
 
 import lombok.Builder;
 import lombok.Getter;

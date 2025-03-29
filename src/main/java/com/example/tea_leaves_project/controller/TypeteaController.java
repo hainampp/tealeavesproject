@@ -1,9 +1,10 @@
-package com.example.tea_leaves_project.controller;
+package com.example.tea_leaves_project.Controller;
 
-import com.example.tea_leaves_project.dto.TypeTeaDto;
-import com.example.tea_leaves_project.service.TypeteaService;
+import com.example.tea_leaves_project.DTO.TypeTeaDto;
+import com.example.tea_leaves_project.Service.TypeteaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;

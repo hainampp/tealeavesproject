@@ -1,6 +1,6 @@
-package com.example.tea_leaves_project.repository;
+package com.example.tea_leaves_project.Responsitory;
 
-import com.example.tea_leaves_project.entity.Warehouse;
+import com.example.tea_leaves_project.Model.entity.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

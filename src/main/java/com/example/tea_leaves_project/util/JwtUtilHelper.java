@@ -1,4 +1,4 @@
-package com.example.tea_leaves_project.util;
+package com.example.tea_leaves_project.Util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,8 +1,8 @@
-package com.example.tea_leaves_project.security;
+package com.example.tea_leaves_project.Security;
 
-import com.example.tea_leaves_project.entity.Users;
-import com.example.tea_leaves_project.repository.UserRepository;
-import com.example.tea_leaves_project.util.JwtUtilHelper;
+import com.example.tea_leaves_project.Model.entity.Users;
+import com.example.tea_leaves_project.Responsitory.UserRepository;
+import com.example.tea_leaves_project.Util.JwtUtilHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,7 +52,6 @@ public class CustomJwtFilter extends OncePerRequestFilter {
     private String getTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         String token=null;
-        System.out.println(bearerToken);
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             token=bearerToken.substring(7);
         }

@@ -1,18 +1,19 @@
-package com.example.tea_leaves_project.service.helper;
+package com.example.tea_leaves_project.Service.helper;
 
-import com.example.tea_leaves_project.exception.ApiException;
-import com.example.tea_leaves_project.exception.CodeResponse;
-import com.example.tea_leaves_project.entity.Package;
-import com.example.tea_leaves_project.entity.TypeTea;
-import com.example.tea_leaves_project.entity.Users;
-import com.example.tea_leaves_project.entity.Warehouse;
+import com.example.tea_leaves_project.DTO.QRPackage;
+import com.example.tea_leaves_project.Exception.ApiException;
+import com.example.tea_leaves_project.Exception.CodeResponse;
+import com.example.tea_leaves_project.Model.entity.Package;
+import com.example.tea_leaves_project.Model.entity.TypeTea;
+import com.example.tea_leaves_project.Model.entity.Users;
+import com.example.tea_leaves_project.Model.entity.Warehouse;
 import com.example.tea_leaves_project.Payload.Request.PackageRequest;
 import com.example.tea_leaves_project.Payload.Response.QrResponse;
-import com.example.tea_leaves_project.repository.PackageRepository;
-import com.example.tea_leaves_project.repository.TypeTeaRespository;
-import com.example.tea_leaves_project.repository.UserRepository;
-import com.example.tea_leaves_project.repository.WarehouseRepository;
-import com.example.tea_leaves_project.service.imp.WarehouseServiceImp;
+import com.example.tea_leaves_project.Responsitory.PackageRepository;
+import com.example.tea_leaves_project.Responsitory.TypeTeaRespository;
+import com.example.tea_leaves_project.Responsitory.UserRepository;
+import com.example.tea_leaves_project.Responsitory.WarehouseRepository;
+import com.example.tea_leaves_project.Service.imp.WarehouseServiceImp;
 import com.example.tea_leaves_project.constant.QRTag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,8 +35,6 @@ public class QRServiceHelper {
     private final WarehouseRepository warehouseRepository;
     private final TypeTeaRespository teaRepository;
     private final PackageRepository packageRepository;
-    @Autowired
-    WarehouseServiceImp warehouseServiceImp;
 
     public String pack(String email, PackageRequest request){
         log.info("Generating QR Code with request: {}, email: {}", request, email);
@@ -44,10 +44,11 @@ public class QRServiceHelper {
         }
         Warehouse warehouse = warehouseRepository.findByWarehouseid(request.getWarehouseid());
         TypeTea typeTea = teaRepository.findByTypeteaid(request.getTypeteaid());
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Package p = Package.builder()
                 .user(user)
                 .warehouse(warehouse)
-                .createdtime(request.getCreatedtime())
+                .createdtime(timestamp)
                 .typetea(typeTea)
                 .util("Kg")
                 .status("Weighn't yet")
@@ -83,8 +84,8 @@ public class QRServiceHelper {
                     .append(teaCode);
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String timestampString = sdf.format(request.getCreatedtime());
+        long time = System.currentTimeMillis();
+        String timestampString = String.valueOf(time);
         if (StringUtils.isNotEmpty(timestampString)){
             qrcode.append(QRTag.CREATED_TIME)
                     .append(padLeft(timestampString.length()))
@@ -109,8 +110,7 @@ public class QRServiceHelper {
             switch (tag){
                 case QRTag.PACKAGE_ID:
                     qrResponse.setPackageid(Long.parseLong(body));
-                    String mess= warehouseServiceImp.scanQrCode(Long.parseLong(body));
-                    qrResponse.setMessage(mess);
+
                     break;
                 case QRTag.USER_ID:
                     qrResponse.setUserid(Long.parseLong(body));
@@ -122,11 +122,12 @@ public class QRServiceHelper {
                     qrResponse.setTeacode(body);
                     break;
                 case QRTag.CREATED_TIME:
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     try {
-                        Date date = sdf.parse(body);
-                        qrResponse.setCreatetime(date);
-                    } catch (ParseException ex) {
+                        long time=Long.parseLong(body);
+                        System.out.println(time);
+                        Timestamp timestamp = new Timestamp(time);
+                        qrResponse.setCreatetime(timestamp);
+                    } catch (Exception ex) {
                         log.error("Parse created date exception: ", ex);
                     }
                     break;

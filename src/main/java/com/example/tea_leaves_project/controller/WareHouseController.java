@@ -1,17 +1,23 @@
-package com.example.tea_leaves_project.controller;
+package com.example.tea_leaves_project.Controller;
 
-import com.example.tea_leaves_project.exception.ApiException;
+import com.example.tea_leaves_project.DTO.WarehouseDto;
+import com.example.tea_leaves_project.Exception.ApiException;
+import com.example.tea_leaves_project.Model.entity.Warehouse;
 import com.example.tea_leaves_project.Payload.Request.WeighRequest;
 import com.example.tea_leaves_project.Payload.Response.QrResponse;
-import com.example.tea_leaves_project.service.UserService;
-import com.example.tea_leaves_project.service.WarehouseService;
-import com.example.tea_leaves_project.service.helper.QRServiceHelper;
-import com.example.tea_leaves_project.util.JwtUtilHelper;
+import com.example.tea_leaves_project.Service.UserService;
+import com.example.tea_leaves_project.Service.WarehouseService;
+import com.example.tea_leaves_project.Service.helper.QRServiceHelper;
+import com.example.tea_leaves_project.Util.JwtUtilHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/warehouse")
@@ -56,12 +62,14 @@ public class WareHouseController {
     }
     @PostMapping("/weigh")
     public  ResponseEntity<?> weighPackage(@RequestBody WeighRequest weighRequest) {
+        weighRequest.setWeight(weighRequest.getWeight()/1000);
+        System.out.println(weighRequest.getWeight());
         return new ResponseEntity<>(warehouseService.Weigh(weighRequest), HttpStatus.OK);
     }
     @PutMapping("/scan")
     public  ResponseEntity<?> scanPackage(@RequestParam String qrcode) {
         QrResponse qrResponse =new QrResponse();
-        return new ResponseEntity<>(qrServiceHelper.unpack(qrcode,qrResponse), HttpStatus.OK);
+        return new ResponseEntity<>(warehouseService.scanQrCode(qrcode), HttpStatus.OK);
     }
 
 }

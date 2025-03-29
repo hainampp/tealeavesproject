@@ -1,4 +1,4 @@
-package com.example.tea_leaves_project.entity;
+package com.example.tea_leaves_project.Model.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
