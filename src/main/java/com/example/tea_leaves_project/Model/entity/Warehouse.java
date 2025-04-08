@@ -21,10 +21,11 @@ public class Warehouse {
     @Column(name="lon")
     private double lon;
     @Column(name="total_capacity")
-    private long total_capacity;
+    private double total_capacity;
     @Column(name="current_capacity")
-    private long current_capacity;
-
+    private double current_capacity;
+    @Column(name="bincode")
+    private String bincode;
     @OneToMany(mappedBy = "warehouse")
     List<Package> packages;
 }

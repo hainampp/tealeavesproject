@@ -11,7 +11,8 @@ import java.util.List;
 
 @Repository
 public interface PackageRepository extends JpaRepository<Package, Long> {
-    List<Package> findByUser(Users user);
+    List<Package> findByUserOrderByPackageidDesc(Users user);
     List<Package> findByWarehouse(Warehouse warehouse);
     Package findByPackageid(long id);
+    List<Package> findByStatusAndWarehouse(String status,Warehouse warehouse);
 }

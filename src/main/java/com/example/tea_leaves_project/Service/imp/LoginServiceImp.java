@@ -51,14 +51,14 @@ public class LoginServiceImp implements LoginService {
     @Override
     public String authUser(String email, String password) {
         Users user=userRepository.findUserByEmail(email);
-        List<String> roleList=new ArrayList<>();
-        roleList.add(user.getRoles().getRolename());
         if(user==null){
             throw ApiException.ErrBadCredentials().build();
         }
         if(!passwordEncoder.matches(password,user.getPassword())){
             throw ApiException.ErrBadCredentials().build();
         }
+        List<String> roleList=new ArrayList<>();
+        roleList.add(user.getRoles().getRolename());
         return jwtUtilHelper.generateToken(email,roleList);
     }
 }
