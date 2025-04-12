@@ -51,7 +51,7 @@ public class QRServiceHelper {
                 .createdtime(timestamp)
                 .typetea(typeTea)
                 .util("Kg")
-                .status("Weighn't yet")
+                .status("Chưa cân")
                 .build();
         Package pack = packageRepository.save(p);
 
@@ -110,7 +110,6 @@ public class QRServiceHelper {
             switch (tag){
                 case QRTag.PACKAGE_ID:
                     qrResponse.setPackageid(Long.parseLong(body));
-
                     break;
                 case QRTag.USER_ID:
                     qrResponse.setUserid(Long.parseLong(body));
@@ -127,6 +126,7 @@ public class QRServiceHelper {
                         System.out.println(time);
                         Timestamp timestamp = new Timestamp(time);
                         qrResponse.setCreatetime(timestamp);
+                        System.out.println(timestamp);
                     } catch (Exception ex) {
                         log.error("Parse created date exception: ", ex);
                     }

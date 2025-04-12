@@ -77,6 +77,8 @@ public class UserServiceImp implements UserService {
                     .unit(p.getUtil())
                     .status(p.getStatus())
                     .qrcode(p.getQrcode())
+                    .humidity(p.getHumidity())
+                    .temperature(p.getTemperature())
                     .build();
             packageDtoList.add(packageDto);
         }
@@ -93,7 +95,7 @@ public class UserServiceImp implements UserService {
             throw ApiException.ErrBadCredentials().build();
         }
         Package pack=packageRepository.findByPackageid(packageId);
-        if( !pack.getStatus().equals("Wait delivery") ) {
+        if( !pack.getStatus().equals("Chưa cân") ) {
             try {
                 packageRepository.deleteById(packageId);
                 responseData.setMessage("Xóa thành công");

@@ -1,5 +1,6 @@
 package com.example.tea_leaves_project.config;
 
+import com.example.tea_leaves_project.Payload.Request.QRScannerData;
 import com.example.tea_leaves_project.Payload.Response.QrResponse;
 import com.example.tea_leaves_project.Service.helper.QRServiceHelper;
 import com.example.tea_leaves_project.Service.imp.WarehouseServiceImp;
@@ -20,11 +21,12 @@ import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
+import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
-
+import com.example.tea_leaves_project.Util.*;
 @Slf4j
 @Configuration
 public class MqttConfig {
@@ -46,7 +48,7 @@ public class MqttConfig {
     @Autowired
     QRServiceHelper qrServiceHelper;
     @Autowired
-    WarehouseServiceImp warehouseServiceImp;
+    WarehouseServiceImp warehouseService;
     @Bean
     public MessageChannel mqttInputChannel() {
         return new DirectChannel();
@@ -71,7 +73,8 @@ public class MqttConfig {
                 new MqttPahoMessageDrivenChannelAdapter(
                         "myclient",
                         mqttPahoClientFactory(),
-                        "esp32/data");
+                        "esp32/data",
+                        "esp32_1/data");
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(0);
@@ -84,26 +87,12 @@ public class MqttConfig {
     @Bean
     @ServiceActivator(inputChannel = "mqttInputChannel")
     public MessageHandler handler() {
-        return new MessageHandler() {
-
-            @Override
-            public void handleMessage(Message<?> message) throws MessagingException {
-                log.info((String) message.getPayload());
-                QrResponse qrResponse = new QrResponse();
-                try {
-                    String payload = (String) message.getPayload();
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode jsonNode = objectMapper.readTree(payload);
-
-                    // Lấy giá trị của qr_code
-                    String qrCode = jsonNode.get("qr_code").asText();
-                    log.info("QR Code: " + qrCode);
-                    warehouseServiceImp.scanQrCode(qrCode);
-                } catch (Exception e) {
-                    log.error("Lỗi scan qrcode " + e.getMessage());
-                }
-
-            }
+        return message -> {
+            String topic = (String) message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC);
+            String payload = (String) message.getPayload();
+            log.info("Received topic: {}, and payload: {}", topic, payload);
+            QRScannerData data = MapperUtil.parseJson(payload, QRScannerData.class);
+            warehouseService.scanQrCode(data);
         };
     }
 }

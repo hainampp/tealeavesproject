@@ -17,6 +17,8 @@ public class PackageDto {
     private Timestamp weightime;
     private String typeteaname;
     private double capacity;
+    private double humidity;
+    private double temperature;
     private String unit;
     private String status;
     private String teacode;

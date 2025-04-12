@@ -53,4 +53,10 @@ public class Package {
     @Column(name="qrcode")
     private String qrcode;
 
+    @Column(name="temperature")
+    private double temperature;
+
+    @Column(name="humidity")
+    private double humidity;
+
 }

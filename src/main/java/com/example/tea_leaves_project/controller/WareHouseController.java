@@ -3,6 +3,7 @@ package com.example.tea_leaves_project.Controller;
 import com.example.tea_leaves_project.DTO.WarehouseDto;
 import com.example.tea_leaves_project.Exception.ApiException;
 import com.example.tea_leaves_project.Model.entity.Warehouse;
+import com.example.tea_leaves_project.Payload.Request.QRScannerData;
 import com.example.tea_leaves_project.Payload.Request.WeighRequest;
 import com.example.tea_leaves_project.Payload.Response.QrResponse;
 import com.example.tea_leaves_project.Service.UserService;
@@ -67,9 +68,9 @@ public class WareHouseController {
         return new ResponseEntity<>(warehouseService.Weigh(weighRequest), HttpStatus.OK);
     }
     @PutMapping("/scan")
-    public  ResponseEntity<?> scanPackage(@RequestParam String qrcode) {
+    public  ResponseEntity<?> scanPackage(@RequestBody QRScannerData data) {
         QrResponse qrResponse =new QrResponse();
-        return new ResponseEntity<>(warehouseService.scanQrCode(qrcode), HttpStatus.OK);
+        return new ResponseEntity<>(warehouseService.scanQrCode(data), HttpStatus.OK);
     }
 
 }
