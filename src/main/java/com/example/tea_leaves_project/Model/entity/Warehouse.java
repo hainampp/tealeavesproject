@@ -26,6 +26,9 @@ public class Warehouse {
     private double current_capacity;
     @Column(name="bincode")
     private String bincode;
+    @Column(name="scancode")
+    private String scancode;
+
     @OneToMany(mappedBy = "warehouse")
     List<Package> packages;
 }

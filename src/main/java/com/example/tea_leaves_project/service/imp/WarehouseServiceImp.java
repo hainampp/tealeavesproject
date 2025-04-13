@@ -14,6 +14,7 @@ import com.example.tea_leaves_project.Responsitory.PackageRepository;
 import com.example.tea_leaves_project.Responsitory.WarehouseRepository;
 import com.example.tea_leaves_project.Service.WarehouseService;
 import com.example.tea_leaves_project.Service.helper.QRServiceHelper;
+import com.example.tea_leaves_project.Service.helper.SendSSEHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ public class WarehouseServiceImp implements WarehouseService {
     PackageRepository packageRepository;
     @Autowired
     QRServiceHelper qrServiceHelper;
+    @Autowired
+    SendSSEHelper sendSSEHelper;
     // tính số bao chè sẵn sàng vận chuyển
     public long calculateTotalPackage(Warehouse warehouse) {
         long sum = 0;
@@ -98,14 +101,28 @@ public class WarehouseServiceImp implements WarehouseService {
         return warehousePackageDto;
     }
     @Override
-    public QrResponse scanQrCode(QRScannerData data) {
+    public QrResponse scanQrCode(String scancode,QRScannerData data) {
+
+        Warehouse warehouse=warehouseRepository.findByScancode(scancode);
+
+        if(warehouse==null){
+            log.info("[WarehouseService- scanQrCode] Không tìm thấy Warehouse với {}",scancode);
+            throw ApiException.ErrNotFound().build();
+        }
+
         QrResponse qrres= new QrResponse();
         QrResponse qrResponse = qrServiceHelper.unpack(data.getQrCode(),qrres);
-        System.out.println(qrResponse.getPackageid());
         Package p = packageRepository.findByPackageid(qrResponse.getPackageid());
+
         if (p == null) {
+            throw ApiException.ErrNotFound().build();
+        }
+
+        if(p.getWarehouse()!=warehouse){
+            log.info("[WarehouseService- scanQrCode] Lỗi {} của {} và kho hiện tại( {} ) không trùng nhau ",p.getWarehouse().getName(),p.getPackageid(),warehouse.getName());
             throw ApiException.ErrDataLoss().build();
         }
+
         if (p.getStatus().equals("Chưa cân")) {
             p.setStatus("Đã quét");
             p.setTemperature(data.getTemperature());
@@ -116,27 +133,28 @@ public class WarehouseServiceImp implements WarehouseService {
         if (p.getStatus().equals("Đã quét") || p.getStatus().equals("Chờ vận chuyển")) {
             qrResponse.setMessage("Sản phẩm đã được quét");
         }
+
+        //send scanned notice
+        sendSSEHelper.notifyQrCodeScanned(p.getUser().getUserid(),p.getUser().getFullname());
+
         return qrResponse;
     }
 
     @Override
     public ResponseData Weigh(WeighRequest weighRequest) {
-        System.out.println(weighRequest.getWeight() + " " + weighRequest.getBin_code());
+        log.info("[WarehouseService- Weigh] {} {}", weighRequest.getWeight(),weighRequest.getBin_code());
         String bin_code = weighRequest.getBin_code();
         ResponseData responseData = new ResponseData();
         ResponseData.resp();
         Warehouse warehouse = warehouseRepository.findByBincode(bin_code);
         if (warehouse == null) {
-            responseData.setMessage("Không tìm thấy cân");
-            return responseData;
-        }
-        if (warehouse == null) {
+            log.info("[WarehouseService- Weigh] Không tìm thấy cân");
             throw ApiException.ErrDataLoss().build();
         }
         List<Package> p = packageRepository.findByStatusAndWarehouse("Đã quét", warehouse);
         if (p.size() == 0) {
             responseData.setMessage("Không tìm thấy bao scan gần nhất");
-            System.out.println("Không tìm thấy bao scan gần nhất");
+            log.info("[WarehouseService- Weigh] Không tìm thấy bao scan gần nhất");
             return responseData;
         }
         if (p.size() > 1) {
@@ -148,9 +166,14 @@ public class WarehouseServiceImp implements WarehouseService {
         Package plast = p.getLast();
         plast.setStatus("Chờ vận chuyển");
         plast.setCapacity(weighRequest.getWeight());
+
         packageRepository.save(plast);
+        // cập nhật tổng cân nặng
         warehouse.setCurrent_capacity(warehouse.getCurrent_capacity() + weighRequest.getWeight());
         warehouseRepository.save(warehouse);
+        // send notice
+        sendSSEHelper.notifyWeigh(plast.getUser().getUserid(),plast.getUser().getFullname(),weighRequest.getWeight());
+
         responseData.setMessage("Cân thành công");
         return responseData;
     }

@@ -3,6 +3,7 @@ package com.example.tea_leaves_project.config;
 import com.example.tea_leaves_project.Payload.Request.QRScannerData;
 import com.example.tea_leaves_project.Payload.Response.QrResponse;
 import com.example.tea_leaves_project.Service.helper.QRServiceHelper;
+import com.example.tea_leaves_project.Service.helper.SendSSEHelper;
 import com.example.tea_leaves_project.Service.imp.WarehouseServiceImp;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +50,8 @@ public class MqttConfig {
     QRServiceHelper qrServiceHelper;
     @Autowired
     WarehouseServiceImp warehouseService;
+    @Autowired
+    SendSSEHelper sendSSEHelper;
     @Bean
     public MessageChannel mqttInputChannel() {
         return new DirectChannel();
@@ -74,7 +77,7 @@ public class MqttConfig {
                         "myclient",
                         mqttPahoClientFactory(),
                         "esp32/data",
-                        "esp32_1/data");
+                            "esp32_1/data");
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(0);
@@ -92,7 +95,7 @@ public class MqttConfig {
             String payload = (String) message.getPayload();
             log.info("Received topic: {}, and payload: {}", topic, payload);
             QRScannerData data = MapperUtil.parseJson(payload, QRScannerData.class);
-            warehouseService.scanQrCode(data);
+            warehouseService.scanQrCode(topic,data);
         };
     }
 }

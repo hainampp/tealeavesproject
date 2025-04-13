@@ -64,13 +64,11 @@ public class WareHouseController {
     @PostMapping("/weigh")
     public  ResponseEntity<?> weighPackage(@RequestBody WeighRequest weighRequest) {
         weighRequest.setWeight(weighRequest.getWeight()/1000);
-        System.out.println(weighRequest.getWeight());
         return new ResponseEntity<>(warehouseService.Weigh(weighRequest), HttpStatus.OK);
     }
     @PutMapping("/scan")
-    public  ResponseEntity<?> scanPackage(@RequestBody QRScannerData data) {
-        QrResponse qrResponse =new QrResponse();
-        return new ResponseEntity<>(warehouseService.scanQrCode(data), HttpStatus.OK);
+    public  ResponseEntity<?> scanPackage(@RequestParam String scancode,@RequestBody QRScannerData data) {
+        return new ResponseEntity<>(warehouseService.scanQrCode(scancode,data), HttpStatus.OK);
     }
 
 }
